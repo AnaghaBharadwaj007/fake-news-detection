@@ -1,4 +1,11 @@
 import { useState } from "react";
+import {
+  FaFacebookF,
+  FaGoogle,
+  FaLinkedinIn,
+  FaShieldAlt,
+  FaTwitter,
+} from "react-icons/fa"; // Importing social icons and TruthLens icon
 import { Link } from "react-router-dom";
 
 export default function SignUp() {
@@ -18,17 +25,17 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="flex w-[950px] rounded-2xl overflow-hidden shadow-xl bg-white">
-        {/* Left Panel */}
-        <div className="w-1/2 bg-white p-10">
-          <h2 className="text-xl font-semibold text-center text-gray-600 mb-2">
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+      <div className="flex w-[950px] rounded-2xl overflow-hidden shadow-2xl bg-gray-800 border border-gray-700">
+        {/* Left Panel - Sign Up Form */}
+        <div className="w-1/2 bg-gray-800 p-10 flex flex-col justify-center">
+          <h2 className="text-xl font-semibold text-center text-gray-300 mb-2">
             JOIN THE COMMUNITY
           </h2>
-          <h1 className="text-3xl font-bold text-black text-center mb-6 flex items-center justify-center gap-2">
-            TruthLens
+          <h1 className="text-3xl font-bold text-white text-center mb-6 flex items-center justify-center gap-2">
+            <FaShieldAlt className="text-sky-400" /> TruthLens
           </h1>
-          <p className="text-sm text-center text-gray-500 mb-6">
+          <p className="text-sm text-center text-gray-400 mb-6">
             Create an account to verify fake news
           </p>
 
@@ -39,7 +46,7 @@ export default function SignUp() {
               placeholder="Username"
               value={formData.username}
               onChange={handleChange}
-              className="border rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-red-400"
+              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-gray-100 placeholder-gray-400 outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors duration-200"
               required
             />
             <input
@@ -48,7 +55,7 @@ export default function SignUp() {
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
-              className="border rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-red-400"
+              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-gray-100 placeholder-gray-400 outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors duration-200"
               required
             />
             <input
@@ -57,47 +64,69 @@ export default function SignUp() {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="border rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-red-400"
+              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-gray-100 placeholder-gray-400 outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors duration-200"
               required
             />
             <button
               type="submit"
-              className="bg-black text-white py-2 rounded-full hover:bg-gray-900 shadow-md transition duration-200"
+              className="bg-sky-600 text-white py-3 rounded-lg hover:bg-sky-700 shadow-md transition duration-200 font-semibold text-lg"
             >
               SIGN UP
             </button>
           </form>
 
-          <div className="text-center mt-4 text-sm">
+          <div className="text-center mt-6 text-sm text-gray-400">
             Already have an account?{" "}
             <Link
               to="/signin"
-              className="text-black font-medium hover:underline"
+              className="text-sky-400 font-medium hover:underline transition-colors duration-200"
             >
               Sign In
             </Link>
           </div>
 
-          <div className="mt-6 text-center text-gray-400 text-sm">Or</div>
-          <div className="flex justify-center gap-4 mt-4">
-            <i className="fab fa-facebook text-blue-600 text-xl cursor-pointer" />
-            <i className="fab fa-twitter text-sky-400 text-xl cursor-pointer" />
-            <i className="fab fa-google text-red-500 text-xl cursor-pointer" />
-            <i className="fab fa-linkedin text-blue-800 text-xl cursor-pointer" />
+          <div className="mt-8 text-center text-gray-500 text-sm">
+            Or Sign Up with
+          </div>
+          <div className="flex justify-center gap-6 mt-4">
+            <a
+              href="#"
+              className="text-blue-500 hover:text-blue-400 transition-colors duration-200 text-2xl"
+            >
+              <FaFacebookF />
+            </a>
+            <a
+              href="#"
+              className="text-sky-400 hover:text-sky-300 transition-colors duration-200 text-2xl"
+            >
+              <FaTwitter />
+            </a>
+            <a
+              href="#"
+              className="text-red-500 hover:text-red-400 transition-colors duration-200 text-2xl"
+            >
+              <FaGoogle />
+            </a>
+            <a
+              href="#"
+              className="text-blue-700 hover:text-blue-600 transition-colors duration-200 text-2xl"
+            >
+              <FaLinkedinIn />
+            </a>
           </div>
         </div>
 
-        {/* Right Panel */}
-        <div className="w-1/2 relative">
+        {/* Right Panel - Image with Overlay Text */}
+        <div className="w-1/2 relative bg-gray-950">
           <img
             src="/Pics/Sign.png"
             alt="background"
-            className="absolute inset-0 w-full h-full object-cover z-0"
+            className="absolute inset-0 w-full h-full object-cover z-0 "
           />
-          {/* <div className="relative z-10  bg-opacity-50 w-full h-full flex flex-col justify-center items-center p-10 text-black">
+          {/* <div className="relative z-10 bg-gray-900 bg-opacity-70 w-full h-full flex flex-col justify-center items-center p-10 text-white text-center">
             <h1 className="text-4xl font-bold mb-4">TruthLens</h1>
-            <p className="text-sm text-center max-w-xs">
-              Join Truth Lens and help fight misinformation with every login.
+            <p className="text-lg text-gray-300 max-w-xs leading-relaxed">
+              Join TruthLens and help fight misinformation with every login.
             </p>
           </div> */}
         </div>

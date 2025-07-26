@@ -8,87 +8,96 @@ export default function Home() {
   };
 
   return (
-    <div className="pt-8 bg-white text-gray-800">
-      {/* Hero Section */}
-      <div className="flex flex-col-reverse md:flex-row items-center justify-between px-8 md:px-16 py-16">
-        <div className="max-w-xl">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
+    <div className="min-h-screen bg-gray-900 text-gray-100 font-sans">
+      <div className="relative flex flex-col items-center justify-center px-8 md:px-16 py-28 text-center overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-10"
+          style={{ backgroundImage: "url('/Pics/Homepage2.png')" }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-90"></div>
+
+        <div className="relative z-10 max-w-2xl">
+          <h1 className="text-5xl font-extrabold text-white mb-4 leading-tight">
             Combat Fake News
           </h1>
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          <h2 className="text-2xl font-semibold text-sky-400 mb-4">
             Powered by Hugging Face Transformers
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-300 mb-8 text-lg">
             TruthLens helps you identify misinformation. Stay ahead in the
             battle for real facts and public awareness.
           </p>
-          <div className="flex gap-4">
-            <button className="bg-black text-white px-6 py-2 rounded-full">
+          <div className="flex gap-4 justify-center">
+            <button className="bg-sky-600 hover:bg-sky-700 text-white px-8 py-3 rounded-full text-lg font-medium transition-colors duration-300 shadow-lg">
               Try Now
             </button>
             <button
               onClick={handleLearnMoreClick}
-              className="text-red-600 font-medium underline"
+              className="text-sky-400 hover:text-sky-300 font-medium underline text-lg transition-colors duration-300"
             >
               Learn More
             </button>
           </div>
         </div>
-
-        <img
-          src="/Pics/Homepage.png"
-          alt="AI scanning fake news"
-          className="w-full max-w-md mb-8 md:mb-0"
-        />
       </div>
 
-      {/* How It Works Section */}
       <div
         ref={howItWorksRef}
-        className="bg-white py-20 px-8 md:px-16 text-center"
+        className="bg-gray-800 py-20 px-8 md:px-16 text-center shadow-inner"
       >
-        <h2 className="text-3xl font-bold mb-12">How TruthLens Works</h2>
+        <h2 className="text-4xl font-bold mb-12 text-white">
+          How TruthLens Works
+        </h2>
 
-        <div className="grid md:grid-cols-3 gap-8 text-left">
-          <div className="bg-gray-100 p-6 rounded-xl shadow transform hover:scale-110 transition duration-300 ease-in-out">
-            <h3 className="text-lg font-bold mb-2">Content Analysis</h3>
-            <p>
+        <div className="grid md:grid-cols-3 gap-10 text-left">
+          <div className="bg-gray-700 p-8 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out border border-gray-600">
+            <h3 className="text-2xl font-bold mb-3 text-sky-400">
+              Content Analysis
+            </h3>
+            <p className="text-gray-300 leading-relaxed">
               Submit text, URLs, or videos. We extract key claims and identify
               factual statements for verification.
             </p>
           </div>
 
-          <div className="bg-gray-100 p-6 rounded-xl shadow transform hover:scale-110 transition duration-300 ease-in-out">
-            <h3 className="text-lg font-bold mb-2">Fact Verification</h3>
-            <p>
+          <div className="bg-gray-700 p-8 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out border border-gray-600">
+            <h3 className="text-2xl font-bold mb-3 text-sky-400">
+              Fact Verification
+            </h3>
+            <p className="text-gray-300 leading-relaxed">
               Cross-reference claims against credible sources and scientific
               databases to determine accuracy.
             </p>
           </div>
 
-          <div className="bg-gray-100 p-6 rounded-xl shadow transform hover:scale-110 transition duration-300 ease-in-out">
-            <h3 className="text-lg font-bold mb-2">Bias Detection</h3>
-            <p>
+          <div className="bg-gray-700 p-8 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out border border-gray-600">
+            <h3 className="text-2xl font-bold mb-3 text-sky-400">
+              Bias Detection
+            </h3>
+            <p className="text-gray-300 leading-relaxed">
               Analyze language patterns and source selection to identify
               political or ideological bias.
             </p>
           </div>
         </div>
 
-        {/* Bottom section */}
-        <div className="grid md:grid-cols-2 gap-10 mt-12 text-left">
-          <div className="bg-gray-100 p-6 rounded-xl shadow transform hover:scale-110 transition duration-300 ease-in-out">
-            <h3 className="text-lg font-bold mb-2">Supported Content Types</h3>
-            <ul className="list-disc list-inside">
+        <div className="grid md:grid-cols-2 gap-10 mt-16 text-left">
+          <div className="bg-gray-700 p-8 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out border border-gray-600">
+            <h3 className="text-2xl font-bold mb-3 text-sky-400">
+              Supported Content Types
+            </h3>
+            <ul className="list-disc list-inside text-gray-300 leading-relaxed">
               <li>News articles and blog posts</li>
               <li>Social media posts</li>
               <li>Video content with transcription</li>
             </ul>
           </div>
 
-          <div className="bg-gray-100 p-6 rounded-xl shadow transform hover:scale-110 transition duration-300 ease-in-out">
-            <h3 className="text-lg font-bold mb-2">Analysis Metrics</h3>
-            <ul className="list-disc list-inside">
+          <div className="bg-gray-700 p-8 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out border border-gray-600">
+            <h3 className="text-2xl font-bold mb-3 text-sky-400">
+              Analysis Metrics
+            </h3>
+            <ul className="list-disc list-inside text-gray-300 leading-relaxed">
               <li>Factual accuracy percentage</li>
               <li>Political bias scale (-10 to +10)</li>
               <li>Source credibility scoring</li>
