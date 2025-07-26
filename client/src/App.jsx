@@ -7,6 +7,7 @@ import History from "./Pages/History";
 import Home from "./Pages/Home";
 import Profile from "./Pages/Profile";
 import Signin from "./Pages/Signin";
+import SignUp from "./Pages/Signup";
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +19,7 @@ function App() {
         <Route path="/detect" element={<Detection />} />
         <Route path="/history" element={<History />} />
         <Route path="/signin" element={<Signin />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
