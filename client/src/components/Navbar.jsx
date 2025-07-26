@@ -9,10 +9,10 @@ import { Link } from "react-router-dom";
 
 export default function Navbar() {
   return (
-    <div className="bg-slate-200">
+    <div className="bg-black">
       <div className="flex items-center justify-between max-w-7.5xl mx-auto px-6 py-4">
-        <h1 className="font-bold text-xl">📰 TruthLens</h1>
-        <ul className="flex items-center gap-10 text-base font-medium">
+        <h1 className="font-bold text-xl text-white">📰 TruthLens</h1>
+        <ul className="flex items-center gap-10 text-base font-medium text-white">
           <Link to="/detect">
             <li className="flex items-center gap-2 hover:text-blue-500 transition">
               <FaSearch /> Detect
