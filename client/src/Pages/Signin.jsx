@@ -1,23 +1,42 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import {
   FaFacebookF,
-  FaTwitter,
   FaGoogle,
   FaLinkedinIn,
   FaShieldAlt,
-} from "react-icons/fa"; // Importing social icons and TruthLens icon
+  FaTwitter,
+} from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+
+import supabase from "../supabaseClient.js";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // handle sign in logic
+    setError("");
+
+    const { email, password } = formData;
+
+    // Supabase login via email
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      console.log("Signed in:", data);
+      navigate("/dashboard"); // or wherever your protected route is
+    }
   };
 
   return (
@@ -37,10 +56,10 @@ export default function SignIn() {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              value={formData.username}
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
               onChange={handleChange}
               className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-gray-100 placeholder-gray-400 outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors duration-200"
               required
@@ -61,6 +80,10 @@ export default function SignIn() {
               SIGN IN
             </button>
           </form>
+
+          {error && (
+            <p className="text-red-400 text-sm text-center mt-4">{error}</p>
+          )}
 
           <div className="text-center mt-6 text-sm text-gray-400">
             Don’t have an account?{" "}
@@ -105,20 +128,11 @@ export default function SignIn() {
 
         {/* Right Panel - Image with Overlay Text */}
         <div className="w-1/2 relative bg-gray-950">
-          {" "}
-          {/* Added a fallback dark background */}
           <img
             src="/Pics/Sign.png"
             alt="background"
-            className="absolute inset-0 w-full h-full object-cover z-0 " // Reduced opacity for subtle background
+            className="absolute inset-0 w-full h-full object-cover z-0"
           />
-          {/* <div className="relative z-10  bg-opacity-70 w-full h-full flex flex-col justify-center items-center p-10 text-white text-center">
-            <h1 className="text-4xl font-bold mb-4">TruthLens</h1>
-            <p className="text-lg text-gray-300 max-w-xs leading-relaxed">
-              At TruthLens, verify any news instantly so you never fall for fake
-              information again.
-            </p>
-          </div> */}
         </div>
       </div>
     </div>

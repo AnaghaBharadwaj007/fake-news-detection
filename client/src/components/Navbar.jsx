@@ -6,44 +6,94 @@ import {
   FaTachometerAlt,
   FaUser,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom"; // Import both Link and NavLink
 
 export default function Navbar() {
   return (
     // Main container for the navbar with a dark background and shadow
-    <div className="bg-gray-900 shadow-lg">
+    <div className="bg-gray-950 shadow-lg">
+      {" "}
+      {/* Reverted to bg-gray-950 */}
       <div className="flex items-center justify-between  mx-auto px-6 py-4">
-        {/* TruthLens logo with the new icon and white text */}
+        {" "}
+        {/* Re-added max-w-7xl */}
         <h1 className="font-bold text-2xl text-white flex items-center gap-2">
-          <FaShieldAlt className="text-sky-400" /> TruthLens
+          {/* TruthLens logo remains a simple Link, not highlighted */}
+          <Link to="/" className="flex items-center gap-2">
+            <FaShieldAlt className="text-sky-400" />
+            <span>TruthLens</span>
+          </Link>
         </h1>
-        {/* Navigation links with updated dark mode colors and hover effects */}
-        <ul className="flex items-center gap-10 text-base font-medium text-gray-300">
-          <Link to="/detect">
-            <li className="flex items-center gap-2 hover:text-sky-400 transition duration-200">
-              <FaSearch /> Detect
-            </li>
-          </Link>
-          <Link to="/history">
-            <li className="flex items-center gap-2 hover:text-sky-400 transition duration-200">
-              <FaHistory /> History
-            </li>
-          </Link>
-          <Link to="/dashboard">
-            <li className="flex items-center gap-2 hover:text-sky-400 transition duration-200">
-              <FaTachometerAlt /> Dashboard
-            </li>
-          </Link>
-          <Link to="/about">
-            <li className="flex items-center gap-2 hover:text-sky-400 transition duration-200">
-              <FaInfoCircle /> About
-            </li>
-          </Link>
-          <Link to="/profile">
-            <li className="flex items-center gap-2 hover:text-sky-400 transition duration-200">
-              <FaUser /> Profile
-            </li>
-          </Link>
+        <ul className="flex items-center gap-10 text-base font-medium">
+          {/* NavLink for Detect */}
+          <NavLink
+            to="/detect"
+            className={({ isActive }) =>
+              `flex items-center gap-2 transition-colors duration-200 ${
+                isActive
+                  ? "text-sky-400 font-semibold"
+                  : "text-gray-300 hover:text-sky-400"
+              }`
+            }
+          >
+            <FaSearch /> Detect
+          </NavLink>
+
+          {/* NavLink for History */}
+          <NavLink
+            to="/history"
+            className={({ isActive }) =>
+              `flex items-center gap-2 transition-colors duration-200 ${
+                isActive
+                  ? "text-sky-400 font-semibold"
+                  : "text-gray-300 hover:text-sky-400"
+              }`
+            }
+          >
+            <FaHistory /> History
+          </NavLink>
+
+          {/* NavLink for Dashboard */}
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `flex items-center gap-2 transition-colors duration-200 ${
+                isActive
+                  ? "text-sky-400 font-semibold"
+                  : "text-gray-300 hover:text-sky-400"
+              }`
+            }
+          >
+            <FaTachometerAlt /> Dashboard
+          </NavLink>
+
+          {/* NavLink for About */}
+          <NavLink
+            to="/about"
+            className={({ isActive }) =>
+              `flex items-center gap-2 transition-colors duration-200 ${
+                isActive
+                  ? "text-sky-400 font-semibold"
+                  : "text-gray-300 hover:text-sky-400"
+              }`
+            }
+          >
+            <FaInfoCircle /> About
+          </NavLink>
+
+          {/* NavLink for Profile */}
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              `flex items-center gap-2 transition-colors duration-200 ${
+                isActive
+                  ? "text-sky-400 font-semibold"
+                  : "text-gray-300 hover:text-sky-400"
+              }`
+            }
+          >
+            <FaUser /> Profile
+          </NavLink>
         </ul>
       </div>
     </div>

@@ -1,12 +1,23 @@
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import supabase from "../supabaseClient";
 
 export default function Home() {
   const howItWorksRef = useRef(null);
-
+  const navigate = useNavigate();
   const handleLearnMoreClick = () => {
     howItWorksRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
+  const handleTryClick = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) {
+      navigate("/detect");
+    } else {
+      navigate("/signin");
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans">
       <div className="relative flex flex-col items-center justify-center px-8 md:px-16 py-28 text-center overflow-hidden">
@@ -28,7 +39,10 @@ export default function Home() {
             battle for real facts and public awareness.
           </p>
           <div className="flex gap-4 justify-center">
-            <button className="bg-sky-600 hover:bg-sky-700 text-white px-8 py-3 rounded-full text-lg font-medium transition-colors duration-300 shadow-lg">
+            <button
+              onClick={handleTryClick}
+              className="bg-sky-600 hover:bg-sky-700 text-white px-8 py-3 rounded-full text-lg font-medium transition-colors duration-300 shadow-lg"
+            >
               Try Now
             </button>
             <button

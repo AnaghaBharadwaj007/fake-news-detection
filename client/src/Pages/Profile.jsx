@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaCheckCircle,
   FaEnvelope,
@@ -7,36 +7,66 @@ import {
   FaTrash,
   FaUserCircle,
 } from "react-icons/fa"; // Importing necessary icons
+import supabase from "../supabaseClient.js";
 
 export default function Profile() {
-  const [email, setEmail] = useState("user.email@example.com"); // Placeholder for user email
+  const [email, setEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // Placeholder functions for functionality
-  const handleUpdateEmail = (e) => {
+  // Get current user email on mount
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      if (user) {
+        setEmail(user.email);
+      }
+    };
+    getUser();
+  }, []);
+
+  // Update email
+  const handleUpdateEmail = async (e) => {
     e.preventDefault();
-    // Your email update logic here
-    console.log("Updating email to:", newEmail);
+    const { error } = await supabase.auth.updateUser({ email: newEmail });
+
+    if (error) {
+      alert("Failed to update email: " + error.message);
+    } else {
+      alert("Verification email sent to new address. Please check your inbox.");
+    }
   };
 
-  const handleUpdatePassword = (e) => {
+  // Update password
+  const handleUpdatePassword = async (e) => {
     e.preventDefault();
-    // Your password update logic here
-    console.log(
-      "Updating password. Current:",
-      currentPassword,
-      "New:",
-      newPassword
-    );
+    if (newPassword !== confirmNewPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+    if (error) {
+      alert("Failed to update password: " + error.message);
+    } else {
+      alert("Password updated successfully.");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    }
   };
 
-  const handleLogout = () => {
-    // Your logout logic here
-    console.log("User logging out.");
+  // Logout
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/signin";
   };
 
   const handleDeleteAccount = () => {

@@ -7,6 +7,7 @@ import {
   FaTwitter,
 } from "react-icons/fa"; // Importing social icons and TruthLens icon
 import { Link } from "react-router-dom";
+import supabase from "../supabaseClient.js";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -15,13 +16,28 @@ export default function SignUp() {
     password: "",
   });
 
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // handle sign up logic
+    setError("");
+    setSuccess("");
+
+    const { user, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: { username: formData.username },
+      },
+    });
+
+    if (error) setError(error.message);
+    else setSuccess("Check you mail to confirm you account");
   };
 
   return (
@@ -74,6 +90,15 @@ export default function SignUp() {
               SIGN UP
             </button>
           </form>
+
+          {error && (
+            <div className="mt-4 text-red-500 text-sm text-center">{error}</div>
+          )}
+          {success && (
+            <div className="mt-4 text-green-500 text-sm text-center">
+              {success}
+            </div>
+          )}
 
           <div className="text-center mt-6 text-sm text-gray-400">
             Already have an account?{" "}
