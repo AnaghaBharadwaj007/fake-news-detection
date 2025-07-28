@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+/* Add these global styles for a consistent dark background */
+html,
+body {
+  background-color: #1a202c; /* Tailwind's gray-900 */
+  color: #e2e8f0; /* Tailwind's gray-200 for default text color */
+  min-height: 100vh; /* Ensure body takes full viewport height */
+}
+
+#root {
+  min-height: 100vh; /* Ensure React root also takes full height */
+  display: flex;
+  flex-direction: column;
+}
