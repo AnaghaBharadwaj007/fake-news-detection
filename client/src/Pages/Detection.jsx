@@ -1,72 +1,151 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  FaBalanceScale, // For alert/fake
+  FaBalanceScale,
   FaCheckCircle,
   FaExclamationTriangle,
-  FaFileAlt,
-  FaKeyboard, // For real/verified
+  FaKeyboard,
   FaLightbulb,
-  FaLink, // For extracted claim (brain/idea)
-  FaSearch, // For loading
-  FaShareAlt, // For negative confirmation
-  FaSpinner, // For bias
-  FaTimesCircle, // For negative confirmation
+  FaLink,
+  FaSearch,
+  FaShareAlt,
+  FaSpinner,
+  FaTimesCircle,
 } from "react-icons/fa";
+import supabase from "../supabaseClient.js"; // Import your Supabase client
 
 export default function Detection() {
-  const [activeTab, setActiveTab] = useState("text"); // 'text', 'file', 'url'
+  const [activeTab, setActiveTab] = useState("text"); // 'text', 'url'
   const [inputText, setInputText] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
   const [inputUrl, setInputUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState(null); // Stores analysis results
+  const [error, setError] = useState(null); // Stores API errors
+  const [currentUserId, setCurrentUserId] = useState(null); // State to store the current user's ID
 
   const resultsRef = useRef(null); // Ref for auto-scrolling to results
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
+  // Fetch current user ID on component mount
+  useEffect(() => {
+    const getUserId = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        setCurrentUserId(session.user.id);
+      } else {
+        // Handle case where no user is logged in (e.g., for anonymous usage or prompt login)
+        // For this project, we'll use a generic ID if not logged in.
+        setCurrentUserId("anonymous_user");
+        console.warn("No active Supabase session. Using anonymous_user_id.");
+      }
+    };
+    getUserId();
 
-  const handleAnalyzeContent = () => {
+    // Listen for auth state changes (e.g., user logs in/out)
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session) {
+          setCurrentUserId(session.user.id);
+        } else {
+          setCurrentUserId("anonymous_user");
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleAnalyzeContent = async () => {
     setIsLoading(true);
     setResults(null); // Clear previous results
+    setError(null); // Clear previous errors
 
-    // Simulate API call with a delay
-    setTimeout(() => {
-      // Default results for demonstration, matching the new sample output format
-      const defaultResults = {
-        verdictHF: "Potentially Fake", // "Potentially Fake" or "Likely Real"
-        extractedClaim: "India banned TikTok in June 2020",
-        searchQueryUsed:
-          "India banned TikTok in June 2020 site:snopes.com OR site:politifact.com",
-        backedInfoFound: {
-          verdict: "confirms", // "confirms", "refutes", "no_info"
-          text: "Snopes.com confirms: 'India did ban TikTok in June 2020 over security concerns'",
+    if (!currentUserId) {
+      setError("User ID not available. Please wait or log in.");
+      setIsLoading(false);
+      return;
+    }
+
+    let requestBody = {
+      user_id: currentUserId, // Use the actual Supabase user ID
+    };
+
+    if (activeTab === "text") {
+      if (!inputText.trim()) {
+        setError("Please enter some text to analyze.");
+        setIsLoading(false);
+        return;
+      }
+      requestBody.article_text = inputText;
+    } else if (activeTab === "url") {
+      if (!inputUrl.trim()) {
+        setError("Please enter a URL to analyze.");
+        setIsLoading(false);
+        return;
+      }
+      requestBody.article_url = inputUrl;
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        finalVerdict: "Real", // "Real", "Fake", or "Uncertain"
-        sources: [
-          "https://www.snopes.com/fact-check/india-bans-tiktok/",
-          "https://www.reuters.com/article/india-china-apps-idUSKBN24016Q", // Added another sample source
-        ],
-        biasScore: "Neutral", // "Neutral", "Slightly Left", "Right", "Heavily Left", "Heavily Right"
-        conclusion:
-          "The content aligns with verified facts regarding India's TikTok ban. The analysis found no significant discrepancies, affirming the claims made in the article. The overall tone appears objective.", // Added for detailed conclusion card
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "An unknown error occurred during analysis.");
+        setResults(null);
+        return;
+      }
+
+      // Map backend response to frontend results structure
+      const mappedResults = {
+        verdictHF: data.model_output,
+        extractedClaim: data.claim,
+        searchQueryUsed: data.search_query,
+        backedInfoFound: {
+          // This logic might need fine-tuning based on precise backend 'backed_info' content
+          verdict:
+            data.sources &&
+            data.sources.length > 0 &&
+            typeof data.sources[0] === "string" &&
+            data.sources[0].startsWith("http")
+              ? "confirms"
+              : "no_info",
+          text: data.backed_info,
+        },
+        finalVerdict: data.verdict,
+        sources: data.sources,
+        biasScore: data.bias,
+        conclusion: data.conclusion,
+        analyzedInput: data.article_text || data.article_url_input,
+        inputType: activeTab,
       };
 
-      setResults(defaultResults);
+      setResults(mappedResults);
+      setError(null);
+    } catch (err) {
+      console.error("API call failed:", err);
+      setError(
+        "Failed to connect to the analysis server. Please ensure the backend is running."
+      );
+      setResults(null);
+    } finally {
       setIsLoading(false);
-    }, 2500); // 2.5-second delay to simulate analysis time
+    }
   };
 
   const handleShareOutput = () => {
-    // This is a placeholder function, Boss.
-    // In a real application, you might:
-    // 1. Generate a unique shareable URL for this specific analysis.
-    // 2. Use the Web Share API (navigator.share) if available.
-    // 3. Copy the output text to the clipboard.
-    // For now, let's just log and alert!
+    // This is a placeholder function.
     console.log("Sharing output:", results);
-    alert("Share functionality coming soon, Boss! Output logged to console.");
+    alert("Share functionality coming soon! Output logged to console.");
   };
 
   useEffect(() => {
@@ -82,8 +161,7 @@ export default function Detection() {
           Analyze Content for Truth
         </h1>
         <p className="text-gray-400 text-center mb-10 text-lg">
-          Paste text, upload a file, or enter a URL to get instant fake news and
-          bias detection.
+          Paste text or enter a URL to get instant fake news and bias detection.
         </p>
 
         {/* Input Type Tabs */}
@@ -98,17 +176,6 @@ export default function Detection() {
               }`}
           >
             <FaKeyboard /> Text
-          </button>
-          <button
-            onClick={() => setActiveTab("file")}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-semibold transition-all duration-200
-              ${
-                activeTab === "file"
-                  ? "bg-sky-600 text-white shadow-lg"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
-              }`}
-          >
-            <FaFileAlt /> File
           </button>
           <button
             onClick={() => setActiveTab("url")}
@@ -134,30 +201,6 @@ export default function Detection() {
               className="w-full p-4 rounded-lg bg-gray-700 border border-gray-600 text-gray-100 placeholder-gray-400 outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors duration-200 resize-y"
             ></textarea>
           )}
-          {activeTab === "file" && (
-            <div className="flex flex-col items-center justify-center p-8 rounded-lg bg-gray-700 border border-gray-600">
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-colors duration-200 text-lg"
-              >
-                Upload File
-              </label>
-              <input
-                id="file-upload"
-                type="file"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-              {selectedFile && (
-                <p className="mt-4 text-gray-300 text-center">
-                  Selected file: {selectedFile.name}
-                </p>
-              )}
-              <p className="mt-2 text-gray-400 text-sm">
-                Supported formats: .txt, .pdf, .docx
-              </p>
-            </div>
-          )}
           {activeTab === "url" && (
             <input
               type="url"
@@ -175,13 +218,13 @@ export default function Detection() {
             onClick={handleAnalyzeContent}
             disabled={
               isLoading ||
-              (activeTab === "text" && !inputText) ||
-              (activeTab === "file" && !selectedFile) ||
-              (activeTab === "url" && !inputUrl)
+              !currentUserId || // Disable if user ID is not yet determined
+              (activeTab === "text" && !inputText.trim()) ||
+              (activeTab === "url" && !inputUrl.trim())
             }
             className={`px-10 py-4 rounded-full text-xl font-bold transition-all duration-300 shadow-lg flex items-center justify-center gap-3 mx-auto
               ${
-                isLoading
+                isLoading || !currentUserId
                   ? "bg-gray-600 text-gray-400 cursor-not-allowed"
                   : "bg-sky-600 text-white hover:bg-sky-700"
               }`}
@@ -191,11 +234,24 @@ export default function Detection() {
                 <FaSpinner className="animate-spin h-5 w-5 text-white" />
                 Analyzing...
               </>
+            ) : !currentUserId ? (
+              <>
+                <FaSpinner className="animate-spin h-5 w-5 text-white" />
+                Loading User...
+              </>
             ) : (
               "Analyze Content"
             )}
           </button>
         </div>
+
+        {/* Error Message Display */}
+        {error && (
+          <div className="mt-8 p-4 bg-red-800 rounded-lg text-white text-center">
+            <p className="font-semibold">Error:</p>
+            <p>{error}</p>
+          </div>
+        )}
       </div>
 
       {/* Analysis Results Section */}
@@ -216,7 +272,7 @@ export default function Detection() {
                   ? "bg-green-700 border-green-600"
                   : results.finalVerdict === "Fake"
                   ? "bg-red-700 border-red-600"
-                  : "bg-yellow-700 border-yellow-600"
+                  : "bg-yellow-700 border-yellow-600" // For Uncertain/Unknown
               }`}
           >
             <div className="flex flex-col items-center justify-center mb-4">
@@ -226,7 +282,8 @@ export default function Detection() {
               {results.finalVerdict === "Fake" && (
                 <FaTimesCircle className="text-white text-6xl mb-2" />
               )}
-              {results.finalVerdict === "Uncertain" && (
+              {(results.finalVerdict === "Uncertain" ||
+                results.finalVerdict === "Unknown") && (
                 <FaExclamationTriangle className="text-white text-6xl mb-2" />
               )}
               <h3 className="text-4xl md:text-5xl font-extrabold text-white">
@@ -236,10 +293,10 @@ export default function Detection() {
             <p className="text-white text-lg md:text-xl font-semibold mb-4">
               Verdict on the analyzed content
             </p>
-            {/* Smaller HF verdict below */}
+            {/* AI Model initial prediction (sentiment-based) */}
             <p className="text-gray-200 text-sm flex items-center justify-center gap-2">
-              HuggingFace Model initial prediction:{" "}
-              {results.verdictHF === "Potentially Fake" ? (
+              Model initial prediction:{" "}
+              {results.verdictHF.includes("Potentially Fake") ? (
                 <span className="text-red-300 flex items-center gap-1">
                   <FaExclamationTriangle className="text-sm" />{" "}
                   {results.verdictHF}
@@ -290,23 +347,9 @@ export default function Detection() {
                 "{results.searchQueryUsed}"
               </span>
             </p>
-            {results.backedInfoFound.verdict === "confirms" ? (
-              <div className="flex items-center gap-2 text-green-400 text-lg">
-                <FaCheckCircle className="text-2xl" />{" "}
-                {results.backedInfoFound.text}
-              </div>
-            ) : results.backedInfoFound.verdict === "refutes" ? (
-              <div className="flex items-center gap-2 text-red-400 text-lg">
-                <FaTimesCircle className="text-2xl" />{" "}
-                {results.backedInfoFound.text}
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 text-yellow-400 text-lg">
-                <FaExclamationTriangle className="text-2xl" />{" "}
-                {results.backedInfoFound.text ||
-                  "No direct confirmation/refutation found."}
-              </div>
-            )}
+            <div className="text-gray-300 text-lg">
+              {results.backedInfoFound.text}
+            </div>
           </div>
 
           {/* Sources Card */}
@@ -315,17 +358,21 @@ export default function Detection() {
               <FaLink className="text-sky-400 text-2xl" /> Sources
             </h3>
             <ul className="list-disc list-inside text-gray-300 mt-2 space-y-2 pl-4">
-              {results.sources.length > 0 ? (
+              {results.sources && results.sources.length > 0 ? (
                 results.sources.map((source, index) => (
                   <li key={index}>
-                    <a
-                      href={source}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sky-400 hover:underline transition-colors duration-200 text-base break-words"
-                    >
-                      {source}
-                    </a>
+                    {source.startsWith("http") ? (
+                      <a
+                        href={source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sky-400 hover:underline transition-colors duration-200 text-base break-words"
+                      >
+                        {source}
+                      </a>
+                    ) : (
+                      <span className="text-gray-300 text-base">{source}</span>
+                    )}
                   </li>
                 ))
               ) : (
@@ -336,7 +383,7 @@ export default function Detection() {
             </ul>
           </div>
 
-          {/* Detailed Conclusion Card (if available) */}
+          {/* Detailed Conclusion Card */}
           {results.conclusion && (
             <div className="bg-gray-700 p-6 rounded-lg border border-gray-600 shadow-md mb-8">
               <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
@@ -358,8 +405,8 @@ export default function Detection() {
               <FaShareAlt /> Share Output
             </button>
             <p className="text-center md:text-right text-gray-400 text-sm">
-              Analysis powered by external fact-checking. For informational
-              purposes only.
+              Analysis powered by AI and external fact-checking. For
+              informational purposes only.
             </p>
           </div>
         </div>
