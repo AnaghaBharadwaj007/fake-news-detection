@@ -138,7 +138,7 @@ export default function About() {
         </p>
         <div className="flex justify-center gap-6">
           <a
-            href="https://github.com/your-github-repo" // Replace with your actual GitHub repo
+            href="https://github.com/AnaghaBharadwaj007/fake-news-detection" // Replace with your actual GitHub repo
             target="_blank"
             rel="noopener noreferrer"
             className="bg-sky-600 text-white py-3 px-6 rounded-lg hover:bg-sky-700 shadow-md transition duration-200 font-semibold text-lg flex items-center gap-2"
